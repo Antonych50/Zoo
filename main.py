@@ -1,4 +1,8 @@
 import abc
+import os
+import re
+from os.path import split
+
 
 class Animal(abc.ABC):
 
@@ -27,7 +31,7 @@ class Bird(Animal):
         return "Seeds"
 
     def str_info(self):
-        return "Птица " + f"{self.name}, возраст {self.age}"
+        return f"{self.name}, {self.age}"
 
 class Mammal(Animal):
     movement = "walking"
@@ -42,7 +46,7 @@ class Mammal(Animal):
         return "Compound feed"
 
     def str_info(self):
-        return "Животное " + f"{self.name}, возраст {self.age}"
+        return f"{self.name}, {self.age}"
 
 
 class Reptile(Animal):
@@ -58,13 +62,16 @@ class Reptile(Animal):
         return "Midge"
 
     def str_info(self):
-        return "Рептилия " + f"{self.name}, возраст {self.age}"
+        return f"{self.name}, {self.age}"
 
 class Employes():
 
     def __init__(self, full_name, post):
         self.name = full_name
         self.post = post
+
+    def str_repr(self):
+        return f"{self.name}, {self.post}"
 
 class ZooKeeper(Employes):
     def __init__(self, full_name, post="zookeeper"):
@@ -85,25 +92,58 @@ class Zoo():
     animals =[] # список животных
     def __init__(self):
         pass
-    def add(self,worker):
-        self.employes.append(worker)
+    @staticmethod
+    def add_worker(full_name, post="zookeeper"):
+        Zoo.employes.append(f"{full_name}, {post}")
 
-    def __add__(self, animal):
-        self.animals.append(animal)
+    @staticmethod
+    def add_animal(name, age):
+        Zoo.animals.append(f"{name}, {age}")
 
-    def remove(self,obj):
-        if type(obj)
-        try:
-            self.employes.remove(worker)
-        except ValueError:
-            print("Такого работника зоопарка нет!")
+    @staticmethod
+    def remove(text):
+        s = split(text)
+        pattern = r'[0-9]+/b'
+        if re.match(pattern,s[1]):#Найдено число во второй части текста, т.е. текст описывает животное
+            try:
+                Zoo.animals.remove(text)
+            except ValueError:
+                print("Такого животного в зоопарке нет!")
+        else:
+            try:
+                Zoo.employes.remove(text)
+            except ValueError:
+                print("Такого работника зоопарка нет!")
 
+current_file_path = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file_path)
 
-    def remove(self, animal):
-        try:
-            self.animals.remove(animal)
-        except ValueError:
-            print("Такого животного в зоопарке нет!")
+with open(current_directory+"/Employes.txt", 'r', encoding='utf-8') as f:
+        Zoo.employes = f.readlines()
+        for i in range(len(Zoo.employes)):
+            Zoo.employes[i] = Zoo.employes[i].strip()
 
+print(f"{Zoo.employes}")
+
+with open(current_directory + "/Animals.txt", 'r', encoding='utf-8') as f:
+    Zoo.animals = f.readlines()
+    for i in range(len(Zoo.animals)):
+        Zoo.animals[i] = Zoo.animals[i].strip()
+print(f"{Zoo.animals}")
+Zoo.add_worker("Кузмичев Кузьма Кузьмич")
+print(f"{Zoo.employes}")
 b = Bird("Grach", 1)
-print(b.str_info())
+s = split(b.str_info())
+Zoo.add_animal(s[0], s[1])
+print(f"{Zoo.animals}")
+Zoo.remove("Алексеев Алексей Алексеевич, veterinarian")
+print(f"{Zoo.employes}")
+Zoo.remove("Поросёнок, 0.5")
+print(f"{Zoo.animals}")
+#Сохраняем возможные изменения в списках сотрудников и животных
+with open(current_directory+"/Employes.txt", 'w', encoding='utf-8') as f:
+    f.writelines(Zoo.employes)
+
+with open(current_directory + "/Animals.txt", 'w', encoding='utf-8') as f:
+    f.writelines(Zoo.animals)
+
